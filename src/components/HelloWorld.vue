@@ -5,7 +5,7 @@
       <br />
       <div class="container">
         <form class="form-group">
-          <label class="w-10">Email address</label>
+          <label class="w-10">Add Your Tasks</label>
           <input type="text" class="form-control w-8" v-model="text" />
           <button
             type="submit"
@@ -42,6 +42,7 @@
                       v-else-if="forEdit == index"
                       @click.prevent="forEnable"
                       :class="{ 'border-danger': error }"
+                      :placeholder="item"
                     />
                   </div>
                   <div class="col col-5">
@@ -107,7 +108,7 @@ export default {
     return {
       text: "",
       todos: [],
-      forEdit: '',
+      forEdit: "",
       textEdited: "",
       showButton: false,
       validated: 0,
@@ -117,22 +118,25 @@ export default {
       finishColor: false,
       doneTask: true,
       error: false,
-      // editIndex: null
+      currentIndex: 0,
     };
   },
   methods: {
-    addTodo(alltext) {
+    addTodo(alltext ) {
       if (this.text === "") {
         return;
       } else {
         alltext = this.text;
         this.todos.push(alltext);
+        this.currentIndex++;
         this.text = "";
       }
+      
     },
-    editText(index) {
+    editText( index) {
       this.showButton = true;
       this.forEdit = index;
+
     },
     forEnable() {
       this.validated = 1;
@@ -145,7 +149,7 @@ export default {
         if (this.textEdited == "") {
           this.error = true;
         } else {
-          this.forEdit = '';
+          this.forEdit = "";
           this.showButton = false;
           this.todos.splice(index, 1, this.textEdited);
         }
@@ -153,24 +157,21 @@ export default {
       this.textEdited = "";
     },
     close() {
-      this.forEdit = '';
+      this.forEdit = "";
       this.showButton = false;
     },
     finishTask() {
-      this.lineFinishClass = true;
+      this.lineFinishClass = !this.lineFinishClass ;
       this.showEditButton = false;
       this.finishColor = true;
       this.doneTask = false;
     },
     UnFinishTask() {
-      this.lineFinishClass = false;
+      this.lineFinishClass = !this.lineFinishClass;
       this.showEditButton = true;
       this.finishColor = false;
       this.doneTask = true;
     },
-    // isDisabled() {
-    //   return !this.validated;
-    // },
     removeTask(index) {
       return this.todos.splice(index, 1);
     },
