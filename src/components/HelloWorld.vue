@@ -48,14 +48,7 @@
                   </div>
                   <div class="col col-5">
                     <div
-                      class="btn btn-warning mr-2 ml-2 mb-1"
-                      v-if="item.showButton"
-                      @click.prevent="close(item)"
-                    >
-                      <i class="fas fa-window-close text-white"></i>
-                    </div>
-                    <div
-                      class="btn btn-success mr-2 ml-2 mb-1"
+                      class="btn btn-primary mr-2 ml-2 mb-1"
                       v-if="item.showButton"
                       :disabled="validated == 1"
                       :class="{ disabled: disableClass }"
@@ -64,8 +57,18 @@
                       <i class="fas fa-check-square"></i>
                     </div>
                     <div
+                      class="btn btn-danger mr-2 ml-2 mb-1"
+                      v-if="item.showButton"
+                      @click.prevent="close(item)"
+                    >
+                      <i class="fas fa-window-close text-white"></i>
+                    </div>
+
+                    <div
                       class="btn btn-primary mr-2 ml-2 mb-1"
                       @click.prevent="editText(item, index)"
+                      :disabled="isEdit == true"
+                      :class="{ disabled: isEdit }"
                       v-if="item.showEditButton"
                     >
                       <i class="fas fa-edit"></i>
@@ -80,6 +83,8 @@
                     <div
                       class="btn btn-success mr-2 ml-2 mb-1"
                       @click.prevent="finishTask(item)"
+                      :disabled="isEdit"
+                      :class="{ disabled: isEdit }"
                       v-if="item.doneTask"
                     >
                       finish
@@ -117,6 +122,7 @@ export default {
       lineFinishClass: false,
       error: false,
       currentIndex: 0,
+      isEdit: false,
     };
   },
   methods: {
@@ -138,13 +144,18 @@ export default {
       }
     },
     editText(item, index) {
-      this.forEdit = index;
-      const indexTodo = this.todos.findIndex((todo) => todo.id === item.id);
-      console.log(indexTodo);
-      const el = this.todos[indexTodo];
-      el.showEditButton = false;
-      el.showButton = true;
-      el.showTrashButton = false;
+      if (this.isEdit) {
+        return;
+      } else {
+        this.isEdit = true;
+        this.forEdit = index;
+        const indexTodo = this.todos.findIndex((todo) => todo.id === item.id);
+        console.log(indexTodo);
+        const el = this.todos[indexTodo];
+        el.showEditButton = false;
+        el.showButton = true;
+        el.showTrashButton = false;
+      }
     },
     forEnable() {
       this.validated = 1;
@@ -165,6 +176,7 @@ export default {
           this.todos[indexTodo].showButton = false;
           this.todos[indexTodo].showTrashButton = false;
           this.todos[indexTodo].doneTask = true;
+          this.isEdit = false;
         }
       }
       this.textEdited = "";
@@ -176,6 +188,7 @@ export default {
       this.todos[indexTodo].showButton = false;
       this.todos[indexTodo].showTrashButton = false;
       this.textEdited = "";
+      this.isEdit = false;
     },
     finishTask(item) {
       if (item.showButton == true) {
@@ -203,7 +216,11 @@ export default {
       this.todos[index].showTrashButton = false;
     },
     removeTask(index) {
-      return this.todos.splice(index, 1);
+      var check = confirm("delete ?");
+      console.log(check);
+      if (check) {
+        return this.todos.splice(index, 1);
+      }
     },
   },
 };
