@@ -16,12 +16,13 @@
           </button>
         </form>
         <div>
-          <transition-group name="fade" tag="ul">
+          <transition-group name="bounce" tag="ul">
             <div
-              class="card wid-85 m-auto bg-light"
-              :class="{ 'border-success': finishColor }"
+              class="card wid-85 m-auto bg-light "
+              :class="{ 'border-success': item.finishColor }"
               v-for="(item, index) in todos"
               :key="index"
+              style="animation-duration: 0.5s"
             >
               <div class="card-body">
                 <div class="row">
@@ -30,64 +31,65 @@
                   >
                     <p
                       class="marg-bottom lead text-center"
-                      :class="{ finishTask: lineFinishClass }"
+                      :class="{ finishTask: item.completed }"
                       v-if="forEdit !== index"
                     >
-                      {{ item }}
+                      {{ item.textTodo }}
                     </p>
                     <input
                       type="text"
-                      class="form-control w-4"
+                      class="form-control w-4 col-lg-6"
                       v-model="textEdited"
                       v-else-if="forEdit == index"
                       @click.prevent="forEnable"
                       :class="{ 'border-danger': error }"
-                      :placeholder="item"
+                      :placeholder="item.textTodo"
                     />
                   </div>
                   <div class="col col-5">
                     <div
-                      class="btn btn-warning mr-2 ml-2"
-                      v-if="showButton"
-                      @click.prevent="close(index)"
+                      class="btn btn-warning mr-2 ml-2 mb-1"
+                      v-if="item.showButton"
+                      @click.prevent="close(item)"
                     >
                       <i class="fas fa-window-close text-white"></i>
                     </div>
                     <div
-                      class="btn btn-success mr-2 ml-2"
-                      v-if="showButton"
+                      class="btn btn-success mr-2 ml-2 mb-1"
+                      v-if="item.showButton"
                       :disabled="validated == 1"
                       :class="{ disabled: disableClass }"
-                      @click.prevent="done(index)"
+                      @click.prevent="done(textEdited, item)"
                     >
                       <i class="fas fa-check-square"></i>
                     </div>
                     <div
-                      class="btn btn-primary mr-2 ml-2"
-                      @click.prevent="editText(index)"
-                      v-if="showEditButton"
+                      class="btn btn-primary mr-2 ml-2 mb-1"
+                      @click.prevent="editText(item, index)"
+                      v-if="item.showEditButton"
                     >
                       <i class="fas fa-edit"></i>
                     </div>
                     <div
-                      class="btn btn-danger mr-2 ml-2"
+                      class="btn btn-danger mr-2 ml-2 mb-1"
                       @click.prevent="removeTask(index)"
+                      v-if="item.showTrashButton"
                     >
                       <i class="fas fa-trash"></i>
                     </div>
                     <div
-                      class="btn btn-success mr-2 ml-2"
-                      @click.prevent="finishTask"
-                      v-if="doneTask"
+                      class="btn btn-success mr-2 ml-2 mb-1"
+                      @click.prevent="finishTask(item)"
+                      v-if="item.doneTask"
                     >
-                      Done
+                      finish
                     </div>
                     <div
-                      class="btn btn-success mr-2 ml-2"
-                      @click.prevent="UnFinishTask"
+                      class="btn btn-success mr-2 ml-2 mb-1"
+                      @click.prevent="UnFinishTask(item)"
                       v-else
                     >
-                      Un-Done
+                      Un-Finish
                     </div>
                   </div>
                 </div>
@@ -110,39 +112,45 @@ export default {
       todos: [],
       forEdit: "",
       textEdited: "",
-      showButton: false,
       validated: 0,
       disableClass: true,
-      showEditButton: true,
       lineFinishClass: false,
-      finishColor: false,
-      doneTask: true,
       error: false,
       currentIndex: 0,
     };
   },
   methods: {
-    addTodo(alltext ) {
-      if (this.text === "") {
+    addTodo(text) {
+      if (text === "") {
         return;
       } else {
-        alltext = this.text;
-        this.todos.push(alltext);
-        this.currentIndex++;
+        this.todos.push({
+          textTodo: text,
+          id: Date.now().toString(),
+          completed: false,
+          finishColor: false,
+          doneTask: true,
+          showEditButton: true,
+          showButton: false,
+          showTrashButton: false,
+        });
         this.text = "";
       }
-      
     },
-    editText( index) {
-      this.showButton = true;
+    editText(item, index) {
       this.forEdit = index;
-
+      const indexTodo = this.todos.findIndex((todo) => todo.id === item.id);
+      console.log(indexTodo);
+      const el = this.todos[indexTodo];
+      el.showEditButton = false;
+      el.showButton = true;
+      el.showTrashButton = false;
     },
     forEnable() {
       this.validated = 1;
       return (this.disableClass = false);
     },
-    done(index) {
+    done(textEdited, item) {
       if (this.validated == 0) {
         return;
       } else {
@@ -150,27 +158,49 @@ export default {
           this.error = true;
         } else {
           this.forEdit = "";
-          this.showButton = false;
-          this.todos.splice(index, 1, this.textEdited);
+          const indexTodo = this.todos.findIndex((todo) => todo.id === item.id);
+          console.log(indexTodo);
+          this.todos[indexTodo].textTodo = textEdited;
+          this.todos[indexTodo].showEditButton = true;
+          this.todos[indexTodo].showButton = false;
+          this.todos[indexTodo].showTrashButton = false;
+          this.todos[indexTodo].doneTask = true;
         }
       }
       this.textEdited = "";
     },
-    close() {
+    close(item) {
       this.forEdit = "";
-      this.showButton = false;
+      const indexTodo = this.todos.findIndex((todo) => todo.id === item.id);
+      this.todos[indexTodo].showEditButton = true;
+      this.todos[indexTodo].showButton = false;
+      this.todos[indexTodo].showTrashButton = false;
+      this.textEdited = "";
     },
-    finishTask() {
-      this.lineFinishClass = !this.lineFinishClass ;
-      this.showEditButton = false;
-      this.finishColor = true;
-      this.doneTask = false;
+    finishTask(item) {
+      if (item.showButton == true) {
+        return;
+      }
+      const index = this.todos.findIndex((todo) => todo.id === item.id);
+      console.log(index);
+      this.todos[index].completed = true;
+      this.todos[index].finishColor = true;
+      this.todos[index].doneTask = false;
+      this.todos[index].showEditButton = false;
+      this.todos[index].showTrashButton = true;
     },
-    UnFinishTask() {
-      this.lineFinishClass = !this.lineFinishClass;
-      this.showEditButton = true;
-      this.finishColor = false;
-      this.doneTask = true;
+    UnFinishTask(item) {
+      if (item.showButton == true) {
+        return;
+      }
+      const index = this.todos.findIndex((todo) => todo.id === item.id);
+      console.log(index);
+
+      this.todos[index].completed = false;
+      this.todos[index].finishColor = false;
+      this.todos[index].doneTask = true;
+      this.todos[index].showEditButton = true;
+      this.todos[index].showTrashButton = false;
     },
     removeTask(index) {
       return this.todos.splice(index, 1);
@@ -195,6 +225,9 @@ li {
 a {
   color: #42b983;
 }
+.hello {
+  overflow: hidden;
+}
 .w-10 {
   width: 100%;
   display: block;
@@ -206,7 +239,7 @@ a {
 }
 .wid-85 {
   width: 85%;
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 .marg-bottom {
   margin-bottom: 0px;
@@ -217,5 +250,32 @@ a {
 }
 .finishTask {
   text-decoration: line-through;
+}
+@media (min-width: 300px) and (max-width: 575.98px) {
+  .container {
+    padding-right: 3px !important;
+    padding-left: 3px !important;
+  }
+  .w-8 {
+    width: 74% !important;
+  }
+  .wid-85 {
+    width: 95% !important;
+  }
+  .w-4 {
+    width: 100% !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 767.98px) {
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .w-8 {
+    width: 90% !important;
+  }
+  .wid-85 {
+    width: 100% !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
 }
 </style>
