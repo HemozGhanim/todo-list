@@ -16,6 +16,5 @@ export default {
 </script>
 
 <style scoped>
-.footer {
-}
+
 </style>

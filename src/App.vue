@@ -1,23 +1,24 @@
 <template>
   <div id="app">
-    <HelloWorld />
-    <Footer />
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/Deleted">Deleted</router-link> |
+      <router-link to="/Finished">Finished</router-link>
+    </div>
+    <router-view />
+    <app-footer></app-footer>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
 import Footer from "./components/Footer.vue";
 
 export default {
-  name: "App",
   components: {
-    HelloWorld,
-    Footer,
+    appFooter: Footer,
   },
 };
 </script>
-
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -25,6 +26,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>
