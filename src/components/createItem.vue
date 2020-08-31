@@ -14,13 +14,13 @@
           >
             Add
           </button>
-          <button
+          <!-- <button
             type="submit"
             @click.prevent="getMyListLocalFunction"
             class="btn btn-primary"
           >
             get data
-          </button>
+          </button> -->
         </form>
         <div>
           <transition-group name="bounce" tag="ul">
@@ -88,6 +88,10 @@ export default {
   computed: {
     ...mapGetters(["todos"]),
   },
+  created(){
+    this.$store.dispatch("getMyListLocal");
+
+  },
   methods: {
     addTodoFunction(text) {
       this.$store.dispatch("addTaskStore", text);
@@ -95,20 +99,11 @@ export default {
     },
     removeTaskStoreFunction(item, index) {
       this.$store.dispatch("removeTaskStore", { item, index });
-      setTimeout(() => {
-        this.isEdit = true;
-      }, 2000);
     },
     finishTaskStoreFunction(item, index) {
-      setTimeout(() => {
-        this.isEdit = true;
-      }, 2000);
       this.$store.dispatch("finishTaskStore", { item, index });
-      
     },
-    getMyListLocalFunction() {
-      this.$store.dispatch("getMyListLocal");
-    },
+
     editText(item, index) {
       if (this.isEdit) {
         return;
@@ -141,8 +136,8 @@ export default {
           this.todos[indexTodo].textTodo = textEdited;
           this.todos[indexTodo].showEditButton = true;
           this.todos[indexTodo].showButton = false;
+          this.todos[indexTodo].doneTask = false;
           this.todos[indexTodo].showTrashButton = true;
-          this.todos[indexTodo].doneTask = true;
           this.isEdit = false;
         }
       }

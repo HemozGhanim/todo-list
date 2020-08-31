@@ -48,7 +48,7 @@ export default new Vuex.Store({
       const indexTodo = state.todos.findIndex((todo) => todo.id === item.id);
       state.todos[indexTodo].completed = true;
       state.todos[indexTodo].finishColor = true;
-      state.todos[indexTodo].showEditButton = false;
+      state.todos[indexTodo].showEditButton = true;
       state.todos[indexTodo].showTrashButton = true;
       state.todos[indexTodo].finished = true;
       state.todos[indexTodo].unfinished = false;
