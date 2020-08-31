@@ -15,6 +15,7 @@ export default new Vuex.Store({
       if (text === "") {
         return;
       } else {
+        state.todos = state.todos  || [];
         state.todos.push({
           textTodo: text,
           id: Date.now().toString(),

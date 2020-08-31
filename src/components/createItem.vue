@@ -88,9 +88,8 @@ export default {
   computed: {
     ...mapGetters(["todos"]),
   },
-  created(){
+  created() {
     this.$store.dispatch("getMyListLocal");
-
   },
   methods: {
     addTodoFunction(text) {
@@ -116,6 +115,7 @@ export default {
         el.showEditButton = false;
         el.showButton = true;
         el.showTrashButton = false;
+        el.doneTask = true;
       }
     },
     forEnable() {
